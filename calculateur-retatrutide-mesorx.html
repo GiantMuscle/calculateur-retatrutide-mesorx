@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculateur Retatrutide — MesoRx français</title>
+<style>
+  :root {
+    --purple: #5c3d9e;
+    --purple-light: #ede8f7;
+    --purple-mid: #7c5bbf;
+    --gray: #888;
+    --gray-light: #f5f5f3;
+    --gray-mid: #e8e8e5;
+    --text: #1a1a1a;
+    --text-muted: #666;
+    --border: #ddd;
+    --white: #fff;
+    --warning-bg: #fff8e1;
+    --warning-text: #b45309;
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: #f2f0f7;
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 2rem 1rem 3rem;
+    color: var(--text);
+  }
+
+  .container {
+    background: var(--white);
+    border-radius: 16px;
+    box-shadow: 0 2px 20px rgba(92,61,158,0.10);
+    max-width: 680px;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .header {
+    background: var(--white);
+    border-bottom: 1px solid var(--gray-mid);
+    padding: 1.25rem 1.75rem;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .logo-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .logo-top {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    line-height: 1;
+  }
+
+  .logo-meso {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--purple);
+    letter-spacing: -0.5px;
+  }
+
+  .logo-diamond {
+    width: 9px;
+    height: 9px;
+    background: var(--purple);
+    transform: rotate(45deg);
+    margin: 0 4px 2px;
+    flex-shrink: 0;
+  }
+
+  .logo-rx {
+    font-size: 24px;
+    font-weight: 400;
+    color: var(--gray);
+    letter-spacing: -0.5px;
+  }
+
+  .logo-badge {
+    background: var(--purple);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 3px;
+    letter-spacing: 0.4px;
+    margin-left: 8px;
+    text-transform: uppercase;
+    align-self: center;
+  }
+
+  .logo-sub {
+    font-size: 11.5px;
+    color: var(--text-muted);
+    letter-spacing: 0.3px;
+  }
+
+  .body { padding: 1.5rem 1.75rem; }
+
+  .section { margin-bottom: 1.4rem; }
+
+  .section-label {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .pill-group { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  .pill {
+    padding: 7px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+  }
+
+  .pill:hover { background: var(--gray-light); border-color: #bbb; }
+
+  .pill.active {
+    background: var(--purple-light);
+    color: var(--purple);
+    border-color: var(--purple);
+    font-weight: 600;
+  }
+
+  .custom-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-top: 8px;
+  }
+
+  .custom-row input {
+    width: 90px;
+    padding: 7px 10px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--white);
+    color: var(--text);
+    font-size: 13px;
+    font-family: inherit;
+    transition: border-color 0.15s;
+  }
+
+  .custom-row input:focus {
+    outline: none;
+    border-color: var(--purple);
+  }
+
+  .custom-row label { font-size: 13px; color: var(--text-muted); }
+
+  .results {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    margin: 1.5rem 0;
+  }
+
+  @media (max-width: 480px) {
+    .results { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .card {
+    background: var(--gray-light);
+    border-radius: var(--radius);
+    padding: 14px 12px;
+    border: 1px solid var(--gray-mid);
+  }
+
+  .card .val {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--purple);
+    line-height: 1.2;
+  }
+
+  .card .sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    line-height: 1.3;
+  }
+
+  .syringe-bar {
+    background: var(--gray-light);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    border: 1px solid var(--gray-mid);
+    margin-bottom: 1.4rem;
+  }
+
+  .bar-label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+
+  .bar-track {
+    height: 12px;
+    background: var(--white);
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    margin-bottom: 6px;
+  }
+
+  .bar-fill {
+    height: 100%;
+    background: var(--purple);
+    border-radius: 6px;
+    transition: width 0.3s, background 0.3s;
+  }
+
+  .bar-fill.over { background: #e24b4a; }
+
+  .bar-ticks {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .warning {
+    background: var(--warning-bg);
+    color: var(--warning-text);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    font-size: 13px;
+    margin-top: 10px;
+    border: 1px solid #fcd34d;
+  }
+
+  .escalade {
+    border-radius: var(--radius);
+    border: 1px solid var(--gray-mid);
+    overflow: hidden;
+    margin-bottom: 1rem;
+  }
+
+  .esc-header {
+    padding: 10px 16px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: var(--gray-light);
+    border-bottom: 1px solid var(--gray-mid);
+  }
+
+  .esc-cols {
+    display: grid;
+    grid-template-columns: 72px 1fr 72px 72px;
+    padding: 6px 16px;
+    font-size: 11.5px;
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    border-bottom: 1px solid var(--gray-mid);
+    background: #fafafa;
+  }
+
+  .esc-cols span:nth-child(3),
+  .esc-cols span:nth-child(4) { text-align: right; }
+
+  .esc-row {
+    display: grid;
+    grid-template-columns: 72px 1fr 72px 72px;
+    padding: 9px 16px;
+    font-size: 13px;
+    border-bottom: 1px solid var(--gray-mid);
+    align-items: center;
+    transition: background 0.15s;
+  }
+
+  .esc-row:last-child { border-bottom: none; }
+
+  .esc-row.current {
+    background: var(--purple-light);
+  }
+
+  .esc-row.current .esc-sem { color: var(--purple); font-weight: 700; }
+  .esc-row.current .esc-label { color: var(--purple-mid); }
+  .esc-row.current .esc-dose { color: var(--purple); font-weight: 600; }
+  .esc-row.current .esc-units { color: var(--purple-mid); font-weight: 600; }
+
+  .esc-sem { color: var(--text-muted); font-size: 12.5px; display: flex; align-items: center; gap: 5px; }
+  .esc-label { color: var(--text-muted); font-size: 12.5px; }
+  .esc-dose { text-align: right; font-weight: 500; }
+  .esc-units { text-align: right; color: var(--text-muted); }
+
+  .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--border);
+    flex-shrink: 0;
+  }
+
+  .dot.active { background: var(--purple); }
+
+  .footer {
+    padding: 1rem 1.75rem;
+    border-top: 1px solid var(--gray-mid);
+    font-size: 11.5px;
+    color: var(--text-muted);
+    text-align: center;
+    background: var(--gray-light);
+    line-height: 1.5;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--gray-mid);
+    margin: 0.2rem 0 1.4rem;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="logo-wrap">
+      <div class="logo-top">
+        <span class="logo-meso">MESO</span>
+        <div class="logo-diamond"></div>
+        <span class="logo-rx">Rx</span>
+        <span class="logo-badge">français</span>
+      </div>
+      <span class="logo-sub">Calculateur Retatrutide</span>
+    </div>
+  </div>
+
+  <div class="body">
+
+    <div class="section">
+      <span class="section-label">Taille de la seringue</span>
+      <div class="pill-group" id="syringes">
+        <button class="pill" data-v="0.3">0,3 mL (30 U)</button>
+        <button class="pill active" data-v="0.5">0,5 mL (50 U)</button>
+        <button class="pill" data-v="1.0">1,0 mL (100 U)</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <span class="section-label">Contenu du flacon (mg)</span>
+      <div class="pill-group" id="vials">
+        <button class="pill active" data-v="10">10 mg</button>
+        <button class="pill" data-v="20">20 mg</button>
+        <button class="pill" data-v="30">30 mg</button>
+      </div>
+      <div class="custom-row">
+        <input type="number" id="vial-custom" placeholder="Autre" min="1" max="100" step="1">
+        <label>mg (personnalisé)</label>
+      </div>
+    </div>
+
+    <div class="section">
+      <span class="section-label">Eau bactériostatique ajoutée (mL)</span>
+      <div class="pill-group" id="waters">
+        <button class="pill" data-v="1">1 mL</button>
+        <button class="pill active" data-v="2">2 mL</button>
+        <button class="pill" data-v="3">3 mL</button>
+        <button class="pill" data-v="5">5 mL</button>
+      </div>
+      <div class="custom-row">
+        <input type="number" id="water-custom" placeholder="Autre" min="0.5" max="20" step="0.5">
+        <label>mL (personnalisé)</label>
+      </div>
+    </div>
+
+    <div class="section">
+      <span class="section-label">Dose souhaitée</span>
+      <div class="pill-group" id="doses">
+        <button class="pill" data-v="500">0,5 mg</button>
+        <button class="pill" data-v="1000">1 mg</button>
+        <button class="pill" data-v="2000">2 mg</button>
+        <button class="pill active" data-v="4000">4 mg</button>
+        <button class="pill" data-v="6000">6 mg</button>
+        <button class="pill" data-v="8000">8 mg</button>
+        <button class="pill" data-v="10000">10 mg</button>
+        <button class="pill" data-v="12000">12 mg</button>
+      </div>
+      <div class="custom-row">
+        <input type="number" id="dose-custom" placeholder="Autre" min="100" max="20000" step="100">
+        <label>mcg (personnalisé)</label>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="results">
+      <div class="card"><div class="val" id="r-conc">-</div><div class="sub">Concentration mcg/mL</div></div>
+      <div class="card"><div class="val" id="r-vol">-</div><div class="sub">Volume par dose (mL)</div></div>
+      <div class="card"><div class="val" id="r-units">-</div><div class="sub">Unités seringue U-100</div></div>
+      <div class="card"><div class="val" id="r-doses">-</div><div class="sub">Doses par flacon</div></div>
+    </div>
+
+    <div class="syringe-bar">
+      <div class="bar-label-row">
+        <span id="bar-label">Remplissage seringue</span>
+        <span id="bar-pct" style="font-weight:600;color:var(--purple)"></span>
+      </div>
+      <div class="bar-track"><div class="bar-fill" id="bar-fill" style="width:0%"></div></div>
+      <div class="bar-ticks"><span>0 U</span><span id="bar-max">50 U</span></div>
+      <div id="warn-over" class="warning" style="display:none">
+        Volume dépasse la capacité de la seringue — utilise une seringue 1 mL ou fractionne la dose.
+      </div>
+    </div>
+
+    <div class="escalade">
+      <div class="esc-header">Protocole d'escalade type (hebdomadaire)</div>
+      <div class="esc-cols">
+        <span>Semaine</span>
+        <span>Palier</span>
+        <span style="text-align:right">Dose</span>
+        <span style="text-align:right">Unités</span>
+      </div>
+      <div id="esc-body"></div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    Outil éducatif — usage personnel. Les calculs sont fournis à titre informatif uniquement.<br>
+    MesoRx français &mdash; Calculateur Retatrutide
+  </div>
+
+</div>
+
+<script>
+const PROTOCOL = [
+  {sem:"S1-S2",  dose:500,   label:"Titration départ"},
+  {sem:"S3-S4",  dose:1000,  label:"Palier 1"},
+  {sem:"S5-S6",  dose:2000,  label:"Palier 2"},
+  {sem:"S7-S8",  dose:4000,  label:"Palier 3"},
+  {sem:"S9-S10", dose:6000,  label:"Palier 4"},
+  {sem:"S11-S12",dose:8000,  label:"Palier 5"},
+  {sem:"S13-S16",dose:10000, label:"Palier 6"},
+  {sem:"S17+",   dose:12000, label:"Dose max"}
+];
+
+let state = {syringe:0.5, vial:10, water:2, dose:4000};
+
+function pick(groupId, val, inputId) {
+  document.querySelectorAll('#'+groupId+' .pill').forEach(p => {
+    p.classList.toggle('active', parseFloat(p.dataset.v) === val);
+  });
+  if (inputId) document.getElementById(inputId).value = '';
+}
+
+function setupPills(groupId, key, inputId) {
+  document.querySelectorAll('#'+groupId+' .pill').forEach(p => {
+    p.addEventListener('click', () => {
+      state[key] = parseFloat(p.dataset.v);
+      pick(groupId, state[key], inputId);
+      calc();
+    });
+  });
+  if (inputId) {
+    document.getElementById(inputId).addEventListener('input', e => {
+      const v = parseFloat(e.target.value);
+      if (!isNaN(v) && v > 0) {
+        state[key] = v;
+        document.querySelectorAll('#'+groupId+' .pill').forEach(p => p.classList.remove('active'));
+        calc();
+      }
+    });
+  }
+}
+
+setupPills('syringes','syringe', null);
+setupPills('vials',   'vial',    'vial-custom');
+setupPills('waters',  'water',   'water-custom');
+setupPills('doses',   'dose',    'dose-custom');
+
+function calc() {
+  const {syringe, vial, water, dose} = state;
+  const conc       = (vial * 1000) / water;
+  const vol        = dose / conc;
+  const units      = vol * 100;
+  const totalDoses = Math.floor((vial * 1000) / dose);
+  const maxUnits   = syringe * 100;
+  const pct        = Math.min((units / maxUnits) * 100, 100);
+  const over       = units > maxUnits;
+
+  document.getElementById('r-conc').textContent  = conc.toLocaleString('fr-FR');
+  document.getElementById('r-vol').textContent   = vol.toFixed(2);
+  document.getElementById('r-units').textContent = units.toFixed(1) + ' U';
+  document.getElementById('r-doses').textContent = totalDoses;
+
+  const fill = document.getElementById('bar-fill');
+  fill.style.width = pct + '%';
+  fill.className = 'bar-fill' + (over ? ' over' : '');
+
+  document.getElementById('bar-max').textContent = maxUnits + ' U';
+  document.getElementById('bar-label').textContent =
+    'Seringue ' + syringe + ' mL';
+  document.getElementById('bar-pct').textContent =
+    over ? 'DÉPASSEMENT' : units.toFixed(1) + ' / ' + maxUnits + ' U';
+  document.getElementById('bar-pct').style.color = over ? '#e24b4a' : 'var(--purple)';
+  document.getElementById('warn-over').style.display = over ? 'block' : 'none';
+
+  const body = document.getElementById('esc-body');
+  body.innerHTML = '';
+  PROTOCOL.forEach(row => {
+    const rowVol = (row.dose / conc) * 100;
+    const isCurrent = row.dose === dose;
+    const div = document.createElement('div');
+    div.className = 'esc-row' + (isCurrent ? ' current' : '');
+    div.innerHTML =
+      '<span class="esc-sem"><span class="dot'+(isCurrent?' active':'')+'"></span>'+row.sem+'</span>' +
+      '<span class="esc-label">'+row.label+'</span>' +
+      '<span class="esc-dose">'+(row.dose/1000).toFixed(1)+' mg</span>' +
+      '<span class="esc-units">'+rowVol.toFixed(1)+' U</span>';
+    body.appendChild(div);
+  });
+}
+
+calc();
+</script>
+</body>
+</html>
